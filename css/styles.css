@@ -669,7 +669,10 @@ p {
 }
 
 .chart-card {
-  min-height: 300px;
+  /* Definite height so Chart.js (maintainAspectRatio:false) can size the
+     canvas against a resolved container height — a flex:1 child inside an
+     auto-height grid row has no definite height and inflates the canvas. */
+  height: 360px;
   display: flex;
   flex-direction: column;
 }
@@ -677,11 +680,11 @@ p {
 .chart-wrap {
   position: relative;
   flex: 1;
-  min-height: 240px;
+  min-height: 0;
 }
 
 .chart-wrap--sm {
-  min-height: 220px;
+  min-height: 0;
   max-width: 420px;
   margin: 0 auto;
   width: 100%;
@@ -1279,8 +1282,8 @@ p {
     flex: 1 1 auto;
   }
 
-  .chart-wrap {
-    min-height: 200px;
+  .chart-card {
+    height: 320px;
   }
 
   .kpi__value {
