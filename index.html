@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Visão Comercial — dashboard para pequenos negócios acompanharem vendas, faturamento e desempenho comercial. Dados fictícios e locais." />
+  <meta name="theme-color" content="#0f172a" />
+  <title>Visão Comercial — Dashboard de Vendas</title>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js" defer></script>
+  <script src="js/main.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Ir para o conteúdo principal</a>
+
+  <div class="app">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar" aria-label="Navegação principal">
+      <div class="sidebar__brand">
+        <div class="sidebar__logo" aria-hidden="true">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+            <rect width="28" height="28" rx="8" fill="currentColor" opacity="0.12"/>
+            <path d="M7 18L11.5 12.5L15 16L21 8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="21" cy="8" r="1.5" fill="currentColor"/>
+          </svg>
+        </div>
+        <div>
+          <strong class="sidebar__title">Visão Comercial</strong>
+          <span class="sidebar__subtitle">Dashboard de vendas</span>
+        </div>
+      </div>
+
+      <nav class="sidebar__nav" aria-label="Seções">
+        <button type="button" class="nav-item is-active" data-section="dashboard" aria-current="page">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+          Visão geral
+        </button>
+        <button type="button" class="nav-item" data-section="sales">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+          Vendas
+        </button>
+        <button type="button" class="nav-item" data-section="import">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Importar / Exportar
+        </button>
+        <button type="button" class="nav-item" data-section="settings">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+          Dados e meta
+        </button>
+      </nav>
+
+      <div class="sidebar__footer">
+        <p class="data-notice" role="note">
+          Dados fictícios e locais. Nada é enviado a servidores.
+        </p>
+      </div>
+    </aside>
+
+    <div class="overlay" id="sidebar-overlay" hidden></div>
+
+    <!-- Main -->
+    <div class="main-wrap">
+      <header class="topbar">
+        <button type="button" class="icon-btn mobile-only" id="menu-toggle" aria-label="Abrir menu" aria-controls="sidebar" aria-expanded="false">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <div class="topbar__heading">
+          <h1 id="page-title">Visão geral</h1>
+          <p class="topbar__period" id="period-label">Carregando período…</p>
+        </div>
+        <div class="topbar__actions">
+          <button type="button" class="btn btn--secondary btn--sm" id="btn-export-header" title="Exportar vendas filtradas em CSV">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Exportar
+          </button>
+          <button type="button" class="btn btn--primary btn--sm" id="btn-new-sale" title="Cadastrar nova venda">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Nova venda
+          </button>
+        </div>
+      </header>
+
+      <main id="main-content" class="content" tabindex="-1">
+        <!-- FILTERS (shared) -->
+        <section class="filters card" aria-labelledby="filters-heading" id="filters-panel">
+          <div class="filters__head">
+            <h2 id="filters-heading" class="card__title">Filtros</h2>
+            <button type="button" class="btn btn--ghost btn--sm" id="btn-clear-filters">Limpar filtros</button>
+          </div>
+
+          <div class="filters__presets" role="group" aria-label="Período rápido">
+            <button type="button" class="chip" data-preset="today">Hoje</button>
+            <button type="button" class="chip" data-preset="7d">Últimos 7 dias</button>
+            <button type="button" class="chip is-active" data-preset="30d" aria-pressed="true">Últimos 30 dias</button>
+            <button type="button" class="chip" data-preset="month">Mês atual</button>
+            <button type="button" class="chip" data-preset="custom">Personalizado</button>
+          </div>
+
+          <div class="filters__grid">
+            <div class="field" id="custom-range" hidden>
+              <label for="filter-date-from">De</label>
+              <input type="date" id="filter-date-from" />
+            </div>
+            <div class="field" id="custom-range-to" hidden>
+              <label for="filter-date-to">Até</label>
+              <input type="date" id="filter-date-to" />
+            </div>
+            <div class="field">
+              <label for="filter-product">Produto</label>
+              <select id="filter-product">
+                <option value="">Todos</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="filter-category">Categoria</label>
+              <select id="filter-category">
+                <option value="">Todas</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="filter-payment">Forma de pagamento</label>
+              <select id="filter-payment">
+                <option value="">Todas</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="filter-seller">Vendedor / canal</label>
+              <select id="filter-seller">
+                <option value="">Todos</option>
+              </select>
+            </div>
+          </div>
+          <p class="filters__summary" id="filter-summary" aria-live="polite"></p>
+        </section>
+
+        <!-- DASHBOARD SECTION -->
+        <section id="section-dashboard" class="section" aria-labelledby="page-title">
+          <!-- KPI cards -->
+          <div class="kpi-grid" role="list" aria-label="Indicadores principais">
+            <article class="kpi card" role="listitem">
+              <div class="kpi__icon kpi__icon--revenue" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+              </div>
+              <div class="kpi__body">
+                <span class="kpi__label">Faturamento total</span>
+                <strong class="kpi__value" id="kpi-revenue">—</strong>
+                <span class="kpi__delta" id="kpi-revenue-delta"></span>
+              </div>
+            </article>
+
+            <article class="kpi card" role="listitem">
+              <div class="kpi__icon kpi__icon--sales" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/></svg>
+              </div>
+              <div class="kpi__body">
+                <span class="kpi__label">Número de vendas</span>
+                <strong class="kpi__value" id="kpi-sales-count">—</strong>
+                <span class="kpi__delta" id="kpi-sales-delta"></span>
+              </div>
+            </article>
+
+            <article class="kpi card" role="listitem">
+              <div class="kpi__icon kpi__icon--ticket" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+              </div>
+              <div class="kpi__body">
+                <span class="kpi__label">Ticket médio</span>
+                <strong class="kpi__value" id="kpi-ticket">—</strong>
+                <span class="kpi__delta" id="kpi-ticket-delta"></span>
+              </div>
+            </article>
+
+            <article class="kpi card" role="listitem">
+              <div class="kpi__icon kpi__icon--product" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+              </div>
+              <div class="kpi__body">
+                <span class="kpi__label">Produto mais vendido</span>
+                <strong class="kpi__value kpi__value--sm" id="kpi-top-product">—</strong>
+                <span class="kpi__hint" id="kpi-top-product-hint"></span>
+              </div>
+            </article>
+
+            <article class="kpi card" role="listitem">
+              <div class="kpi__icon kpi__icon--category" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
+              </div>
+              <div class="kpi__body">
+                <span class="kpi__label">Categoria mais rentável</span>
+                <strong class="kpi__value kpi__value--sm" id="kpi-top-category">—</strong>
+                <span class="kpi__hint" id="kpi-top-category-hint"></span>
+              </div>
+            </article>
+
+            <article class="kpi card" role="listitem">
+              <div class="kpi__icon kpi__icon--seller" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+              </div>
+              <div class="kpi__body">
+                <span class="kpi__label">Melhor vendedor / canal</span>
+                <strong class="kpi__value kpi__value--sm" id="kpi-top-seller">—</strong>
+                <span class="kpi__hint" id="kpi-top-seller-hint"></span>
+              </div>
+            </article>
+
+            <article class="kpi card kpi--wide" role="listitem">
+              <div class="kpi__icon kpi__icon--goal" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+              </div>
+              <div class="kpi__body kpi__body--goal">
+                <span class="kpi__label">Meta mensal</span>
+                <div class="goal-row">
+                  <strong class="kpi__value" id="kpi-goal">—</strong>
+                  <span class="kpi__value kpi__value--sm" id="kpi-goal-pct">—</span>
+                </div>
+                <div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="goal-progress" aria-label="Progresso da meta mensal">
+                  <div class="progress__bar" id="goal-progress-bar"></div>
+                </div>
+                <span class="kpi__hint" id="kpi-goal-hint"></span>
+              </div>
+            </article>
+          </div>
+
+          <!-- Charts -->
+          <div class="charts-grid">
+            <article class="card chart-card">
+              <div class="card__head">
+                <h3 class="card__title">Faturamento por dia</h3>
+                <span class="card__badge" id="chart-daily-badge" title="Soma do faturamento diário no período filtrado">Período</span>
+              </div>
+              <div class="chart-wrap">
+                <canvas id="chart-daily" aria-label="Gráfico de faturamento por dia" role="img"></canvas>
+                <p class="empty-chart" id="empty-chart-daily" hidden>Sem vendas no período selecionado.</p>
+              </div>
+            </article>
+
+            <article class="card chart-card">
+              <div class="card__head">
+                <h3 class="card__title">Comparação com período anterior</h3>
+                <span class="card__badge" title="Mesma duração imediatamente anterior ao período filtrado">Atual × anterior</span>
+              </div>
+              <div class="chart-wrap chart-wrap--sm">
+                <canvas id="chart-compare" aria-label="Gráfico de comparação de faturamento com período anterior" role="img"></canvas>
+                <p class="empty-chart" id="empty-chart-compare" hidden>Sem dados para comparar.</p>
+              </div>
+              <div class="compare-stats" id="compare-stats" hidden>
+                <div class="compare-stat">
+                  <span class="compare-stat__label">Vendas</span>
+                  <strong id="compare-sales-cur">—</strong>
+                  <span class="compare-stat__prev" id="compare-sales-prev"></span>
+                </div>
+                <div class="compare-stat">
+                  <span class="compare-stat__label">Ticket médio</span>
+                  <strong id="compare-ticket-cur">—</strong>
+                  <span class="compare-stat__prev" id="compare-ticket-prev"></span>
+                </div>
+              </div>
+            </article>
+
+            <article class="card chart-card">
+              <div class="card__head">
+                <h3 class="card__title">Vendas por produto</h3>
+              </div>
+              <div class="chart-wrap">
+                <canvas id="chart-product" aria-label="Gráfico de vendas por produto" role="img"></canvas>
+                <p class="empty-chart" id="empty-chart-product" hidden>Sem vendas no período.</p>
+              </div>
+            </article>
+
+            <article class="card chart-card">
+              <div class="card__head">
+                <h3 class="card__title">Vendas por categoria</h3>
+              </div>
+              <div class="chart-wrap chart-wrap--sm">
+                <canvas id="chart-category" aria-label="Gráfico de vendas por categoria" role="img"></canvas>
+                <p class="empty-chart" id="empty-chart-category" hidden>Sem vendas no período.</p>
+              </div>
+            </article>
+
+            <article class="card chart-card">
+              <div class="card__head">
+                <h3 class="card__title">Formas de pagamento</h3>
+              </div>
+              <div class="chart-wrap chart-wrap--sm">
+                <canvas id="chart-payment" aria-label="Gráfico de formas de pagamento" role="img"></canvas>
+                <p class="empty-chart" id="empty-chart-payment" hidden>Sem vendas no período.</p>
+              </div>
+            </article>
+
+            <article class="card chart-card">
+              <div class="card__head">
+                <h3 class="card__title">Desempenho por vendedor / canal</h3>
+              </div>
+              <div class="chart-wrap">
+                <canvas id="chart-seller" aria-label="Gráfico de desempenho por vendedor ou canal" role="img"></canvas>
+                <p class="empty-chart" id="empty-chart-seller" hidden>Sem vendas no período.</p>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <!-- SALES SECTION -->
+        <section id="section-sales" class="section" hidden aria-labelledby="sales-heading">
+          <div class="card">
+            <div class="card__head card__head--wrap">
+              <h2 id="sales-heading" class="card__title">Vendas</h2>
+              <div class="table-toolbar">
+                <div class="search-field">
+                  <label for="sales-search" class="sr-only">Pesquisar vendas</label>
+                  <svg class="search-field__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                  <input type="search" id="sales-search" placeholder="Pesquisar cliente, produto, categoria…" autocomplete="off" />
+                </div>
+                <button type="button" class="btn btn--primary btn--sm" id="btn-new-sale-table">Nova venda</button>
+              </div>
+            </div>
+
+            <div class="table-meta">
+              <span id="sales-count-label">0 vendas</span>
+              <span id="sales-total-label"></span>
+            </div>
+
+            <div class="table-scroll" role="region" aria-label="Tabela de vendas" tabindex="0">
+              <table class="data-table" id="sales-table">
+                <thead>
+                  <tr>
+                    <th scope="col">
+                      <button type="button" class="th-sort is-active" data-sort="date" aria-label="Ordenar por data" aria-sort="descending">Data <span class="sort-ind" aria-hidden="true">↓</span></button>
+                    </th>
+                    <th scope="col">
+                      <button type="button" class="th-sort" data-sort="client" aria-label="Ordenar por cliente">Cliente <span class="sort-ind" aria-hidden="true"></span></button>
+                    </th>
+                    <th scope="col">
+                      <button type="button" class="th-sort" data-sort="product" aria-label="Ordenar por produto">Produto <span class="sort-ind" aria-hidden="true"></span></button>
+                    </th>
+                    <th scope="col">
+                      <button type="button" class="th-sort" data-sort="category" aria-label="Ordenar por categoria">Categoria <span class="sort-ind" aria-hidden="true"></span></button>
+                    </th>
+                    <th scope="col" class="num">
+                      <button type="button" class="th-sort" data-sort="quantity" aria-label="Ordenar por quantidade">Qtd. <span class="sort-ind" aria-hidden="true"></span></button>
+                    </th>
+                    <th scope="col" class="num">
+                      <button type="button" class="th-sort" data-sort="unitPrice" aria-label="Ordenar por valor unitário">Vl. unit. <span class="sort-ind" aria-hidden="true"></span></button>
+                    </th>
+                    <th scope="col" class="num">
+                      <button type="button" class="th-sort" data-sort="total" aria-label="Ordenar por valor total">Total <span class="sort-ind" aria-hidden="true"></span></button>
+                    </th>
+                    <th scope="col">
+                      <button type="button" class="th-sort" data-sort="paymentMethod" aria-label="Ordenar por pagamento">Pagamento <span class="sort-ind" aria-hidden="true"></span></button>
+                    </th>
+                    <th scope="col">
+                      <button type="button" class="th-sort" data-sort="seller" aria-label="Ordenar por vendedor">Vendedor / canal <span class="sort-ind" aria-hidden="true"></span></button>
+                    </th>
+                    <th scope="col" class="actions-col">Ações</th>
+                  </tr>
+                </thead>
+                <tbody id="sales-tbody">
+                </tbody>
+              </table>
+            </div>
+
+            <div class="empty-state" id="sales-empty" hidden>
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/></svg>
+              <h3>Nenhuma venda encontrada</h3>
+              <p>Ajuste os filtros ou cadastre uma nova venda para começar.</p>
+              <button type="button" class="btn btn--primary" id="btn-empty-new-sale">Cadastrar venda</button>
+            </div>
+
+            <div class="pagination" id="pagination" aria-label="Paginação da tabela">
+              <button type="button" class="btn btn--ghost btn--sm" id="page-prev" disabled>Anterior</button>
+              <span id="page-info" aria-live="polite">Página 1 de 1</span>
+              <button type="button" class="btn btn--ghost btn--sm" id="page-next" disabled>Próxima</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- IMPORT / EXPORT SECTION -->
+        <section id="section-import" class="section" hidden aria-labelledby="import-heading">
+          <div class="split-grid">
+            <article class="card">
+              <h2 id="import-heading" class="card__title">Importar CSV</h2>
+              <p class="card__desc">
+                Importe vendas a partir de um arquivo CSV. A importação só é aplicada se <strong>todas</strong> as linhas forem válidas — não há importação parcial silenciosa.
+              </p>
+
+              <div class="import-box" id="import-dropzone" tabindex="0" role="button" aria-label="Área para selecionar ou soltar arquivo CSV">
+                <input type="file" id="import-file" accept=".csv,text/csv" class="sr-only" />
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                <p><strong>Clique para escolher</strong> ou arraste um arquivo CSV</p>
+                <p class="muted">Máx. recomendado: alguns milhares de linhas</p>
+              </div>
+
+              <div class="import-actions">
+                <button type="button" class="btn btn--secondary" id="btn-download-sample">Baixar CSV de exemplo</button>
+                <button type="button" class="btn btn--primary" id="btn-import-confirm" disabled>Validar e importar</button>
+              </div>
+
+              <div class="import-result" id="import-result" hidden role="status" aria-live="polite"></div>
+            </article>
+
+            <article class="card">
+              <h2 class="card__title">Exportar CSV</h2>
+              <p class="card__desc">
+                Exporte as vendas do conjunto filtrado atual (mesmos filtros da visão geral e da tabela).
+              </p>
+              <ul class="export-info">
+                <li>Período e filtros ativos aplicados</li>
+                <li>Formato compatível com a importação</li>
+                <li>Separador: vírgula · Encoding: UTF-8 com BOM</li>
+              </ul>
+              <button type="button" class="btn btn--primary" id="btn-export-csv">Exportar vendas filtradas</button>
+
+              <hr class="divider" />
+
+              <h3 class="card__subtitle">Colunas esperadas</h3>
+              <code class="code-block" id="csv-headers-help">data,cliente,produto,categoria,quantidade,valor_unitario,forma_pagamento,vendedor</code>
+              <p class="muted mt-sm">O valor total é calculado automaticamente (quantidade × valor unitário).</p>
+            </article>
+          </div>
+        </section>
+
+        <!-- SETTINGS SECTION -->
+        <section id="section-settings" class="section" hidden aria-labelledby="settings-heading">
+          <div class="split-grid">
+            <article class="card">
+              <h2 id="settings-heading" class="card__title">Meta mensal</h2>
+              <p class="card__desc">Defina a meta de faturamento do mês civil atual. Usada no indicador de progresso.</p>
+              <div class="field">
+                <label for="monthly-goal">Meta de faturamento (R$)</label>
+                <input type="number" id="monthly-goal" min="0" step="100" inputmode="decimal" />
+              </div>
+              <button type="button" class="btn btn--primary" id="btn-save-goal">Salvar meta</button>
+            </article>
+
+            <article class="card">
+              <h2 class="card__title">Dados locais</h2>
+              <p class="card__desc">
+                Todos os registros ficam apenas neste navegador (localStorage). Nada é enviado a servidores externos.
+              </p>
+              <div class="stack-actions">
+                <button type="button" class="btn btn--secondary" id="btn-restore-demo">
+                  Restaurar dados de demonstração
+                </button>
+                <button type="button" class="btn btn--danger" id="btn-clear-all">
+                  Apagar todos os dados
+                </button>
+              </div>
+              <p class="muted mt-sm" id="storage-info"></p>
+            </article>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- Toast container -->
+  <div class="toast-container" id="toast-container" aria-live="polite" aria-relevant="additions"></div>
+
+  <!-- Sale modal -->
+  <div class="modal" id="sale-modal" role="dialog" aria-modal="true" aria-labelledby="sale-modal-title" hidden>
+    <div class="modal__backdrop" data-close-modal></div>
+    <div class="modal__panel" role="document">
+      <header class="modal__header">
+        <h2 id="sale-modal-title">Nova venda</h2>
+        <button type="button" class="icon-btn" data-close-modal aria-label="Fechar">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </header>
+      <form id="sale-form" class="modal__body" novalidate>
+        <input type="hidden" id="sale-id" />
+        <div class="form-grid">
+          <div class="field">
+            <label for="sale-date">Data <span class="req" aria-hidden="true">*</span></label>
+            <input type="date" id="sale-date" required />
+            <span class="field-error" id="err-sale-date" role="alert"></span>
+          </div>
+          <div class="field">
+            <label for="sale-client">Cliente <span class="req" aria-hidden="true">*</span></label>
+            <input type="text" id="sale-client" required maxlength="120" autocomplete="name" placeholder="Nome do cliente" />
+            <span class="field-error" id="err-sale-client" role="alert"></span>
+          </div>
+          <div class="field">
+            <label for="sale-product">Produto <span class="req" aria-hidden="true">*</span></label>
+            <input type="text" id="sale-product" list="product-list" required maxlength="120" placeholder="Nome do produto" />
+            <datalist id="product-list"></datalist>
+            <span class="field-error" id="err-sale-product" role="alert"></span>
+          </div>
+          <div class="field">
+            <label for="sale-category">Categoria <span class="req" aria-hidden="true">*</span></label>
+            <input type="text" id="sale-category" list="category-list" required maxlength="80" placeholder="Categoria" />
+            <datalist id="category-list"></datalist>
+            <span class="field-error" id="err-sale-category" role="alert"></span>
+          </div>
+          <div class="field">
+            <label for="sale-quantity">Quantidade <span class="req" aria-hidden="true">*</span></label>
+            <input type="number" id="sale-quantity" required min="1" step="1" value="1" />
+            <span class="field-error" id="err-sale-quantity" role="alert"></span>
+          </div>
+          <div class="field">
+            <label for="sale-unit-price">Valor unitário (R$) <span class="req" aria-hidden="true">*</span></label>
+            <input type="number" id="sale-unit-price" required min="0.01" step="0.01" placeholder="0,00" />
+            <span class="field-error" id="err-sale-unit-price" role="alert"></span>
+          </div>
+          <div class="field">
+            <label for="sale-total-display">Valor total</label>
+            <input type="text" id="sale-total-display" readonly tabindex="-1" class="readonly" value="R$ 0,00" aria-live="polite" />
+          </div>
+          <div class="field">
+            <label for="sale-payment">Forma de pagamento <span class="req" aria-hidden="true">*</span></label>
+            <select id="sale-payment" required>
+              <option value="">Selecione…</option>
+            </select>
+            <span class="field-error" id="err-sale-payment" role="alert"></span>
+          </div>
+          <div class="field">
+            <label for="sale-seller">Vendedor / canal <span class="req" aria-hidden="true">*</span></label>
+            <input type="text" id="sale-seller" list="seller-list" required maxlength="80" placeholder="Ex.: Loja Física, Instagram" />
+            <datalist id="seller-list"></datalist>
+            <span class="field-error" id="err-sale-seller" role="alert"></span>
+          </div>
+        </div>
+        <footer class="modal__footer">
+          <button type="button" class="btn btn--ghost" data-close-modal>Cancelar</button>
+          <button type="submit" class="btn btn--primary" id="sale-submit">Salvar venda</button>
+        </footer>
+      </form>
+    </div>
+  </div>
+
+  <!-- Confirm modal -->
+  <div class="modal" id="confirm-modal" role="dialog" aria-modal="true" aria-labelledby="confirm-title" hidden>
+    <div class="modal__backdrop" data-close-confirm></div>
+    <div class="modal__panel modal__panel--sm" role="document">
+      <header class="modal__header">
+        <h2 id="confirm-title">Confirmar</h2>
+        <button type="button" class="icon-btn" data-close-confirm aria-label="Fechar">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </header>
+      <div class="modal__body">
+        <p id="confirm-message"></p>
+      </div>
+      <footer class="modal__footer">
+        <button type="button" class="btn btn--ghost" data-close-confirm>Cancelar</button>
+        <button type="button" class="btn btn--danger" id="confirm-ok">Confirmar</button>
+      </footer>
+    </div>
+  </div>
+</body>
+</html>
